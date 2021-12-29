@@ -31,7 +31,7 @@ def is_on_Linesegment(px,py, Line):
             return Line.projShape.startDeg>=pDeg and pDeg>=Line.projShape.endDeg    #do we need > ?
 
 
-def ip_with_deltaneigbourhood(sideLine,deltaLines,delta):
+def ips_with_deltaneigbourhood(sideLine,deltaLines,delta):
     PL=[]
     for l in deltaLines:
         for h in deltaLines_of_Line(l,delta):
