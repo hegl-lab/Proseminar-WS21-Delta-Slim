@@ -35,7 +35,7 @@ def triangleIsCovered(triangle, delta):
     edges=triangle.edges
     for i, edge in enumerate(edges):
         side1, side2 = edges[(i-1)%len(edges)], edges[(i+1)%len(edges)]
-        s1 = edge.intersectionsWithHcycle(side1)
+        vert = edge.intersectionsWithHcycle(side1)
         p1, p2 = [], []
         for h1 in deltaLines_of_Line(side1, delta):
             ip1 = edge.intersectionsWithHcycle(h1)
@@ -47,16 +47,15 @@ def triangleIsCovered(triangle, delta):
             for p in ip2:
                 if is_on_Linesegment(*p,edge):
                     p2.append(p)
-        if len(p1) <= 0 or len(p2) <= 0:
+        if len(p1) <= 0 or len(p2) <= 0:        #one side delta is sourrounding the whole edge
             continue
         elif len(p1) > 1 or len(p2) > 1:
             raise Exception('Intersection with edge %s is ambiguous'%i)
         else:
-            if is_on_Linesegment(*p2, Line.fromPoints(*s1, *p1, segment=True)):
+            ps1, ps2 = p1[0], p2[0]
+            s1=vert[0]
+            if is_on_Linesegment(*ps2, Line.fromPoints(*s1, *ps1, segment=True)):
                 continue
             else:
                 return False
-    
-
-
-
+    return True
