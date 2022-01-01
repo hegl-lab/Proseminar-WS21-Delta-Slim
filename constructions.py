@@ -1,9 +1,13 @@
-'''constructionos for delta-slim triangles'''
+'''Constructionos for delta-slim triangles'''
 
 import math
 from hyperbolic.euclid import intersection
 from hyperbolic.euclid.shapes import  Arc, Line as ELine
 from hyperbolic.poincare.shapes import *
+
+def shift(seq, shift=1):
+    perm=shift%len(seq)
+    return seq[-perm:] + seq[:-perm]
 
 def deltaLines_of_Line(Line, offset):
     hc1=Hypercycle.fromHypercycleOffset(Line,offset)
@@ -23,14 +27,15 @@ def is_on_Linesegment(px,py, Line):
     elif isinstance(Line.projShape,Arc):
         px = px-Line.projShape.cx
         py = py-Line.projShape.cy
-        pDeg = math.degrees(math.atan2(py, px))%360
+        pDeg = math.degrees(math.atan2(py, px))
         if not Line.projShape.cw:
-            return Line.projShape.startDeg%360<=pDeg and pDeg<=Line.projShape.endDeg%360    #do we need %360 ?
+            return Line.projShape.startDeg<=pDeg and pDeg<=Line.projShape.endDeg
         else:
-            return Line.projShape.startDeg%360>=pDeg and pDeg>=Line.projShape.endDeg%360    #do we need %360 ?
+            return Line.projShape.startDeg>=pDeg and pDeg>=Line.projShape.endDeg
+    else:
+        return True
 
-
-def triangleIsCovered(triangle, delta):
+def triangleIsCovered(triangle, delta):             #use subclass Triangle instead
     assert isinstance(triangle,Polygon)
     edges=triangle.edges
     for i, edge in enumerate(edges):
