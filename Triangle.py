@@ -1,5 +1,5 @@
 from hyperbolic.poincare.shapes import *
-from constructions import deltaLines_of_Line, is_on_Linesegment
+from constructions import deltaLines_of_Line, isPointOnSegment
 
 class Triangle(Polygon):
     def __init__(self, edges=None, join=False, vertices=None):
@@ -12,12 +12,12 @@ class Triangle(Polygon):
             for h1 in deltaLines_of_Line(side1, delta):
                 ip1 = edge.intersectionsWithHcycle(h1)
                 for p in ip1:
-                    if is_on_Linesegment(*p,edge):
+                    if isPointOnSegment(*p,edge):
                         p1.append(p)
             for h2 in deltaLines_of_Line(side2, delta):
                 ip2 = edge.intersectionsWithHcycle(h2)
                 for p in ip2:
-                    if is_on_Linesegment(*p,edge):
+                    if isPointOnSegment(*p,edge):
                         p2.append(p)
             if len(p1) <= 0 or len(p2) <= 0:        #one side delta is sourrounding the whole edge
                 continue
@@ -26,11 +26,18 @@ class Triangle(Polygon):
             else:
                 ps1, ps2 = p1[0], p2[0]
                 s1=vert[0]
-                if is_on_Linesegment(*ps2, Line.fromPoints(*s1, *ps1, segment=True)):
+                if isPointOnSegment(*ps2, Line.fromPoints(*s1, *ps1, segment=True)):
                     continue
                 else:
                     return False
         return True
+    def isCw(self):
+        #TODO: return True if triangle is clockwise, 'cause only inner hypercycle is needed for isCovered
+        # can be decided by CW or CCW 
+        pass
+    def makeRandom(self):
+        #TODO: returns random triangle
+        pass
     @classmethod
     def fromVertices(cls, vertices):
         if len(vertices)!=3:
