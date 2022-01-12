@@ -20,7 +20,7 @@ def makeRoundCap(hcycle, point, delta):
         mpoints = []
         for h in deltaLines_of_Line(perp, delta):
             for p in hcycle.intersectionsWithHcycle(h):
-                if isPointOnSegment(*p, hcycle):
+                if isPointOnSegment(hcycle, *p):
                     mpoints.append(p)
         assert len(points1)==1 and len(points2)==1 and len(mpoints)==1
         p1, p2, mp = points1[0], points2[0], mpoints[0]

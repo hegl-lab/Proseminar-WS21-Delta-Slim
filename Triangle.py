@@ -12,12 +12,12 @@ class Triangle(Polygon):
             for h1 in deltaLines_of_Line(side1, delta):
                 ip1 = edge.intersectionsWithHcycle(h1)
                 for p in ip1:
-                    if isPointOnSegment(*p,edge):
+                    if isPointOnSegment(edge, *p):
                         p1.append(p)
             for h2 in deltaLines_of_Line(side2, delta):
                 ip2 = edge.intersectionsWithHcycle(h2)
                 for p in ip2:
-                    if isPointOnSegment(*p,edge):
+                    if isPointOnSegment(edge, *p):
                         p2.append(p)
             if len(p1) <= 0 or len(p2) <= 0:        #one side delta is sourrounding the whole edge
                 continue
@@ -27,7 +27,7 @@ class Triangle(Polygon):
             else:
                 ps1, ps2 = p1[0], p2[0]
                 s1=vert[0]
-                if isPointOnSegment(*ps2, Line.fromPoints(*s1, *ps1, segment=True)):
+                if isPointOnSegment(Line.fromPoints(*s1, *ps1, segment=True), *ps2):
                     continue
                 else:
                     return False

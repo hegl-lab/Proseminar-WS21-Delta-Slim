@@ -2,7 +2,6 @@
 
 import math
 from hyperbolic import util
-from hyperbolic.euclid import intersection
 from hyperbolic.euclid.shapes import  Arc, Line as ELine
 from hyperbolic.poincare.shapes import *
 
@@ -15,31 +14,57 @@ def deltaLines_of_Line(Line, offset):
     hc2=Hypercycle.fromHypercycleOffset(Line,-offset)
     return [hc1,hc2]
 
-def isPointOnSegment(px,py, Line):
+def isPointOnSegment(Line, x, y):
     ''' Assumes that the given point is on the line '''
-    assert isinstance(Line.projShape, (Arc, ELine))    #check wheter Line has segment
-    if isinstance(Line.projShape, ELine): 
-        K1=(px-Line.projShape.x1)*(Line.projShape.x2-Line.projShape.x1)+(py-Line.projShape.y1)*(Line.projShape.y2-Line.projShape.y1)
-        K2=(px-Line.projShape.x2)*(Line.projShape.x1-Line.projShape.x2)+(py-Line.projShape.y2)*(Line.projShape.y1-Line.projShape.y2)
-        if K1>=0 and K2>=0:
-            return True
-        else:
-            return False
-    elif isinstance(Line.projShape,Arc):
-        arc = Line.projShape
+    if isinstance(Line, ELine):
+        ''' Assumes that the given point is on the line '''
+        eline = Line.projShape
+        #dot product of vectors startPoint->(x,y) and startpoint->endPoint
+        K1 = (x - eline.x1) * (eline.x2 - eline.x1) + (y - eline.y1) * (eline.y2 - eline.y1)
+        #dot product of vectors endPoint->(x,y) and endpoint->startPoint
+        K2 = (x - eline.x2) * (eline.x1 - eline.x2) + (y - eline.y2) * (eline.y1 - eline.y2)      
+        return K1 >= 0 and K2 >= 0
+    elif isinstance(Line, Arc):
+        arc = Line
+        ''' Assumes that the given point is on the circle and returns True if on this arc '''
         startDeg, endDeg = arc.startDeg % 360, arc.endDeg % 360
         if arc.cw:
             startDeg, endDeg = endDeg, startDeg
         else:
             startDeg, endDeg = startDeg, endDeg
-        px = px - arc.cx
-        py = py - arc.cy
+        px = x - arc.cx
+        py = y - arc.cy
         pDeg = math.degrees(math.atan2(py, px)) % 360
-        if util.nearZero(pDeg - startDeg) or util.nearZero(pDeg - endDeg):
+        if util.nearZero(pDeg-startDeg) or util.nearZero(pDeg-endDeg):
             return True
-        if startDeg<endDeg: 
+        if startDeg<endDeg:
+            return startDeg<=pDeg<=endDeg
+        else:
+            return (endDeg<=pDeg) ^ (pDeg<=startDeg)        
+    elif isinstance(Line.projShape, ELine):
+        ''' Assumes that the given point is on the line '''
+        eline = Line.projShape
+        #dot product of vectors startPoint->(x,y) and startpoint->endPoint
+        K1 = (x - eline.x1) * (eline.x2 - eline.x1) + (y - eline.y1) * (eline.y2 - eline.y1)
+        #dot product of vectors endPoint->(x,y) and endpoint->startPoint
+        K2 = (x - eline.x2) * (eline.x1 - eline.x2) + (y - eline.y2) * (eline.y1 - eline.y2)      
+        return K1 >= 0 and K2 >= 0
+    elif isinstance(Line.projShape,Arc):
+        arc = Line.projShape
+        ''' Assumes that the given point is on the circle and returns True if on this arc '''
+        startDeg, endDeg = arc.startDeg % 360, arc.endDeg % 360
+        if arc.cw:
+            startDeg, endDeg = endDeg, startDeg
+        else:
+            startDeg, endDeg = startDeg, endDeg
+        px = x - arc.cx
+        py = y - arc.cy
+        pDeg = math.degrees(math.atan2(py, px)) % 360
+        if util.nearZero(pDeg-startDeg) or util.nearZero(pDeg-endDeg):
+            return True
+        if startDeg<endDeg:
             return startDeg<=pDeg<=endDeg
         else:
             return (endDeg<=pDeg) ^ (pDeg<=startDeg)
     else:
-        return True
+        raise TypeError('Type is not supported')
