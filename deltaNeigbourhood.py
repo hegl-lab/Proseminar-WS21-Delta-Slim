@@ -4,7 +4,7 @@ Created on Mon Dec 27 12:53:04 2021
 
 @author: Simon Heidrich
 """
-from constructions import is_on_Linesegment, deltaLines_of_Line
+from constructions import isPointOnSegment, deltaLines_of_Line
 from hyperbolic.poincare.shapes import *
 from hyperbolic.euclid.shapes import Arc
 
@@ -20,7 +20,7 @@ def makeRoundCap(hcycle, point, delta):
         mpoints = []
         for h in deltaLines_of_Line(perp, delta):
             for p in hcycle.intersectionsWithHcycle(h):
-                if is_on_Linesegment(*p, hcycle):
+                if isPointOnSegment(*p, hcycle):
                     mpoints.append(p)
         assert len(points1)==1 and len(points2)==1 and len(mpoints)==1
         p1, p2, mp = points1[0], points2[0], mpoints[0]

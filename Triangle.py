@@ -22,6 +22,7 @@ class Triangle(Polygon):
             if len(p1) <= 0 or len(p2) <= 0:        #one side delta is sourrounding the whole edge
                 continue
             elif len(p1) > 1 or len(p2) > 1:
+                #TODO: if of the Points is an Ideal remove this Point
                 raise Exception('Intersection with edge %s is ambiguous'%i)
             else:
                 ps1, ps2 = p1[0], p2[0]
