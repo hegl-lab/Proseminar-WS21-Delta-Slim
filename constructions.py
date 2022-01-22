@@ -1,6 +1,7 @@
 '''Constructionos for delta-slim triangles'''
 
 import math
+import numpy as np
 from hyperbolic import util
 from hyperbolic.euclid.shapes import  Arc, Line as ELine
 from hyperbolic.poincare.shapes import *
@@ -13,6 +14,12 @@ def deltaLines_of_Line(Line, offset):
     hc1=Hypercycle.fromHypercycleOffset(Line,offset)
     hc2=Hypercycle.fromHypercycleOffset(Line,-offset)
     return [hc1,hc2]
+
+def randomPoints(number):
+    rvals = np.random.rand(number)**0.5
+    tvals = 2*math.pi*np.random.rand(number)
+    pts = [Point.fromPolarEuclid(r,rad=t) for r,t in zip(rvals,tvals)]
+    return pts
 
 def isPointOnSegment(Line, x, y):
     ''' Assumes that the given point is on the line '''
