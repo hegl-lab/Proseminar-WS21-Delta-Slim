@@ -77,7 +77,7 @@ class Triangle(Polygon):
         while self.isCovered(delta)==False:
             delta=delta*2
             k=k+1
-        while i-k<14:
+        while i-k<17:
             if self.isCovered(delta)==True:
                 delta=delta-2**(k-i)
                 i=i+1
