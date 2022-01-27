@@ -41,8 +41,8 @@ class Triangle(Polygon):
     def isCovered(self, delta):
         '''returns True when the delta-neigbourhood of any two sides of the self already cover the last one'''
         for i, edge in enumerate(self.edges):
-            ip1 = edge.intersectionsWithHcycle(self.offsetEdge(i-1,delta))
-            ip2 = edge.intersectionsWithHcycle(self.offsetEdge(i+1,delta))
+            ip1 = edge.intersectionsWithHcycle(self.offsetEdge(i-1, delta))
+            ip2 = edge.intersectionsWithHcycle(self.offsetEdge(i+1, delta))
             p1 = [p for p in ip1 if (isPointOnSegment(edge, *p) and not p.isIdeal())]   #tiny delta for ideal triangles will remove all points
             p2 = [p for p in ip2 if (isPointOnSegment(edge, *p) and not p.isIdeal())]   #tiny delta for ideal triangles will remove all points
             if len(p1) <= 0 or len(p2) <= 0:            #deltaNbh of one side is sourrounding the whole edge or problem above
@@ -58,14 +58,14 @@ class Triangle(Polygon):
                     return False
         return True
     def approx(self):
-        '''returns the smallest delta for which the self is delta-slim up to a precission of 10e-17'''
+        '''returns the smallest delta for which self is delta-slim'''
         i=1
         k=0
         delta=1    
         while self.isCovered(delta)==False:
             delta=delta*2
             k=k+1
-        while i-k<17:
+        while i-k<19:
             if self.isCovered(delta)==True:
                 delta=delta-2**(k-i)
                 i=i+1
@@ -73,7 +73,7 @@ class Triangle(Polygon):
                 delta=delta+2**(k-i)
                 i=i+1
         if self.isCovered(delta)==False:
-            delta=delta+2**(k-i)
+            delta=delta+2**(k-i+1)      #some triangles are still not covered
             i=i+1
         return delta
     def offsetVertice(self, vertNum, edgeNum, offset, inner=False, onEdge=False):
@@ -81,12 +81,12 @@ class Triangle(Polygon):
         or returns intersection point of the offset edge's perpendicular line at the vertice and the edge itself'''
         assert edgeNum!=(vertNum+1)%len(self.vertices)          #edge and vertice can't lie opposide of each other
         vert = self.vertices[vertNum%len(self.vertices)]
+        if vert.isIdeal():
+            return vert        
         edge = self.edges[edgeNum%len(self.edges)]
         offsetEdge = self.offsetEdge(edgeNum, offset, inner)
         perp = edge.makePerpendicular(*vert)
-        if vert.isIdeal():
-            return vert
-        elif onEdge:
+        if onEdge:
             pts = [edge.intersectionsWithHcycle(h)[0] 
                     for h in deltaLines_of_Line(perp, offset) 
                     if isPointOnSegment(edge, *edge.intersectionsWithHcycle(h)[0])]
@@ -94,6 +94,12 @@ class Triangle(Polygon):
         else:
             pts = offsetEdge.intersectionsWithHcycle(perp)
             assert len(pts)==1
+        return pts[0]
+    def offsetEdgeIntersectionPoint(self, edgeNum, offset):
+        hc1 = self.offsetEdge(edgeNum+1, offset)
+        hc2 = self.offsetEdge(edgeNum-1, offset)
+        pts = [p for p in hc1.intersectionsWithHcycle(hc2) if not p.isIdeal()]
+        assert len(pts)==1      #fails for bad geometry
         return pts[0]
     def endCap(self, vertNum, edgeNum, offset):
         sp = self.offsetVertice(vertNum, edgeNum, offset, inner=True)
@@ -105,6 +111,9 @@ class Triangle(Polygon):
         else:
             return Arc.fromPoints(*sp, *ep, *mp, excludeMid=True)
     def midCap(self, vertNum, offset):
+        vert = self.vertices[vertNum%len(self.vertices)]
+        if vert.isIdeal():
+            return vert
         sp = self.offsetVertice(vertNum, vertNum-1, offset, inner=False)
         ep = self.offsetVertice(vertNum, vertNum, offset, inner=False)
         circ = Circle.fromCenterRadius(self.vertices[vertNum%len(self.vertices)], offset)
