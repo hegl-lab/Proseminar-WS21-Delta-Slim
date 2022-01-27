@@ -11,15 +11,7 @@ class Triangle(Polygon):
             assert len(vertices)==3
         super().__init__(edges=edges, join=join, vertices=vertices)
     def isCCW(self):
-        '''gives the orientation of the euclidian triangle rigth now needs fixing
-        x0, y0 = self.vertices[0].x, self.vertices[0].y
-        x1, y1 = self.vertices[1].x, self.vertices[1].y
-        x2, y2 = self.vertices[2].x, self.vertices[2].y
-        x1, y1 = x1-x0, y1-y0                           #transform p0 to origin
-        x2, y2 = x2-x0, y2-y0                           #transform p0 to origin
-        Deg1 = math.degrees(math.atan2(y1, x1))         #get Deg of p1
-        Deg2 = math.degrees(math.atan2(y2, x2))         #get Deg of p2
-        ccw = (Deg2-Deg1)%360<=180'''
+        '''returns True for a counter-clock-wise self'''
         if self.isIdeal():
             Deg0 = math.degrees(self.vertices[0].theta)
             Deg1 = math.degrees(self.vertices[1].theta)
@@ -33,26 +25,21 @@ class Triangle(Polygon):
             ccw=math.degrees(p2.theta)%360<=180
         return ccw
     def isIdeal(self):
+        '''returns True when all vertices are ideal points'''
         return (self.vertices[0].isIdeal() and self.vertices[1].isIdeal() and self.vertices[2].isIdeal())
     def isEdgeIdeal(self, edgeNum):
-        if (self.vertices[(edgeNum+1)%len(self.vertices)].isIdeal() 
-            and self.vertices[edgeNum%len(self.vertices)].isIdeal()):
-            return True
-        else:
-            return False
+        '''returns True when both vertices of the edge are ideal points'''
+        return (self.vertices[edgeNum%len(self.vertices)].isIdeal() and self.vertices[(edgeNum+1)%len(self.vertices)].isIdeal())
     def offsetEdge(self, edgeNum, offset, inner=True):
-        if ((self.isCCW() and offset<=0) 
-            or (not self.isCCW() and offset>=0)):
-            offset = -offset
-        if self.isEdgeIdeal(edgeNum=edgeNum):
+        '''returns the offset hypercycle of the edge closer to the inside of the self when inner is True'''
+        if ((self.isCCW() and offset<=0) or (not self.isCCW() and offset>=0)) ^ self.isEdgeIdeal(edgeNum):
             offset = -offset
         if inner:
             return Hypercycle.fromHypercycleOffset(self.edges[edgeNum%len(self.edges)], offset)
         else:
             return Hypercycle.fromHypercycleOffset(self.edges[edgeNum%len(self.edges)], -offset)
     def isCovered(self, delta):
-        #if (self.isCCW() and delta<=0) or (not self.isCCW() and delta>=0):
-        #    delta = -delta
+        '''returns True when the delta-neigbourhood of any two sides of the self already cover the last one'''
         for i, edge in enumerate(self.edges):
             ip1 = edge.intersectionsWithHcycle(self.offsetEdge(i-1,delta))
             ip2 = edge.intersectionsWithHcycle(self.offsetEdge(i+1,delta))
@@ -71,6 +58,7 @@ class Triangle(Polygon):
                     return False
         return True
     def approx(self):
+        '''returns the smallest delta for which the self is delta-slim up to a precission of 10e-17'''
         i=1
         k=0
         delta=1    
@@ -88,6 +76,44 @@ class Triangle(Polygon):
             delta=delta+2**(k-i)
             i=i+1
         return delta
+    def offsetVertice(self, vertNum, edgeNum, offset, inner=False, onEdge=False):
+        '''returns intersection point of the (outer) offsetEdge and the edge's perpendicular line at the vertice
+        or returns intersection point of the offset edge's perpendicular line at the vertice and the edge itself'''
+        assert edgeNum!=(vertNum+1)%len(self.vertices)          #edge and vertice can't lie opposide of each other
+        vert = self.vertices[vertNum%len(self.vertices)]
+        edge = self.edges[edgeNum%len(self.edges)]
+        offsetEdge = self.offsetEdge(edgeNum, offset, inner)
+        perp = edge.makePerpendicular(*vert)
+        if vert.isIdeal():
+            return vert
+        elif onEdge:
+            pts = [edge.intersectionsWithHcycle(h)[0] 
+                    for h in deltaLines_of_Line(perp, offset) 
+                    if isPointOnSegment(edge, *edge.intersectionsWithHcycle(h)[0])]
+            assert len(pts)==1
+        else:
+            pts = offsetEdge.intersectionsWithHcycle(perp)
+            assert len(pts)==1
+        return pts[0]
+    def endCap(self, vertNum, edgeNum, offset):
+        sp = self.offsetVertice(vertNum, edgeNum, offset, inner=True)
+        mp = self.offsetVertice(vertNum, edgeNum, offset, onEdge=True)
+        ep = self.offsetVertice(vertNum, edgeNum, offset, inner=False)
+        if sp.isIdeal() or mp.isIdeal() or ep.isIdeal():
+            idealpts=[p for p in [sp,mp,ep] if p.isIdeal()]
+            return idealpts[0]
+        else:
+            return Arc.fromPoints(*sp, *ep, *mp, excludeMid=True)
+    def midCap(self, vertNum, offset):
+        sp = self.offsetVertice(vertNum, vertNum-1, offset, inner=False)
+        ep = self.offsetVertice(vertNum, vertNum, offset, inner=False)
+        circ = Circle.fromCenterRadius(self.vertices[vertNum%len(self.vertices)], offset)
+        cp = Point.fromEuclid(circ.projShape.cx, circ.projShape.cy)
+        if sp.isIdeal() or cp.isIdeal() or ep.isIdeal():
+            idealpts=[p for p in [sp,cp,ep] if p.isIdeal()]
+            return idealpts[0]
+        else:
+            return Arc.fromPointsWithCenter(*sp,*ep, *cp, r=circ.projShape.r, cw= not self.isCCW())
     @classmethod
     def fromVertices(cls, vertices):
         if len(vertices)!=3:

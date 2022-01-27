@@ -15,14 +15,13 @@ def deltaLines_of_Line(Line, offset):
     hc2=Hypercycle.fromHypercycleOffset(Line,-offset)
     return [hc1,hc2]
 
-def randomPoints(number):
-    rvals = np.random.rand(number)**0.5
-    tvals = 2*math.pi*np.random.rand(number)
+def randomPoints(int):
+    rvals = np.random.rand(int)**0.5
+    tvals = 2*math.pi*np.random.rand(int)
     pts = [Point.fromPolarEuclid(r,rad=t) for r,t in zip(rvals,tvals)]
     return pts
 
 def isPointOnSegment(Line, x, y):
-    ''' Assumes that the given point is on the line '''
     if isinstance(Line, ELine):
         ''' Assumes that the given point is on the line '''
         eline = Line.projShape
