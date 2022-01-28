@@ -65,7 +65,7 @@ class Triangle(Polygon):
         while self.isCovered(delta)==False:
             delta=delta*2
             k=k+1
-        while i-k<19:
+        while i-k<45:
             if self.isCovered(delta)==True:
                 delta=delta-2**(k-i)
                 i=i+1
@@ -74,7 +74,6 @@ class Triangle(Polygon):
                 i=i+1
         if self.isCovered(delta)==False:
             delta=delta+2**(k-i+1)      #some triangles are still not covered
-            i=i+1
         return delta
     def offsetVertice(self, vertNum, edgeNum, offset, inner=False, onEdge=False):
         '''returns intersection point of the (outer) offsetEdge and the edge's perpendicular line at the vertice

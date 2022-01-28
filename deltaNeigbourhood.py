@@ -80,7 +80,7 @@ def deltaNbh(triangle, delta, edgeNum=0):
     eInLine = triangle.offsetEdge(k+1, delta, inner=True).trimmed(*v6, *temp7, chooseShorter=True)
     if len(intersectionsCap(sCap, eCap))==1:
         v1 = intersectionsCap(sCap, eCap)[0]
-        sCap = sCap.trimmed(*v1, *v2, chooseShorter=True)
+        sCap = sCap.trimmed(*v1, *v2, chooseShorter=True) #Arc.fromPoints(*v1,*v2, triangle.offsetVertice(k, k-1, delta, onEdge=True))
         eCap = eCap.trimmed(*v5, *v1, chooseShorter=True)
         vertices , edges = [v1, v2, v3, v4, v5], [sCap, sOutLine, mCap, eOutLine, eCap]
     elif len(intersectionsCap(sCap, eInLine))==1:
