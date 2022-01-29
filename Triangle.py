@@ -45,10 +45,12 @@ class Triangle(Polygon):
             ip2 = edge.intersectionsWithHcycle(self.offsetEdge(i+1, delta))
             p1 = [p for p in ip1 if (isPointOnSegment(edge, *p) and not p.isIdeal())]   #tiny delta for ideal triangles will remove all points
             p2 = [p for p in ip2 if (isPointOnSegment(edge, *p) and not p.isIdeal())]   #tiny delta for ideal triangles will remove all points
-            if len(p1) <= 0 or len(p2) <= 0:            #deltaNbh of one side is sourrounding the whole edge or problem above
+            # Whole edge is covered by on of the sides deltaNbh or problem above
+            if len(p1) <= 0 or len(p2) <= 0:
                 continue
+            # May throw if bad geometry
             elif len(p1) > 1 or len(p2) > 1:
-                raise ValueError('Intersection with edge %s is ambiguous'%i)
+                raise ValueError('Intersection with edge {} is ambiguous'.format(i))
             else:
                 ps1, ps2 = p1[0], p2[0]
                 s1 = self.vertices[i]
@@ -58,7 +60,7 @@ class Triangle(Polygon):
                     return False
         return True
     def approx(self):
-        '''returns the smallest delta for which self is delta-slim'''
+        '''returns the smallest delta for which the triangle is delta-slim'''
         i=1
         k=0
         delta=1    
@@ -73,12 +75,13 @@ class Triangle(Polygon):
                 delta=delta+2**(k-i)
                 i=i+1
         if self.isCovered(delta)==False:
-            delta=delta+2**(k-i+1)      #some triangles are still not covered
+            delta=delta+2**(k-i+1)
         return delta
     def offsetVertice(self, vertNum, edgeNum, offset, inner=False, onEdge=False):
-        '''returns intersection point of the (outer) offsetEdge and the edge's perpendicular line at the vertice
-        or returns intersection point of the offset edge's perpendicular line at the vertice and the edge itself'''
-        assert edgeNum!=(vertNum+1)%len(self.vertices)          #edge and vertice can't lie opposide of each other
+        '''returns offset vertice on (outer) offseEdge
+        or returns offset vertice on Edge '''
+        if edgeNum%len(self.edges)==(vertNum+1)%len(self.vertices):
+            raise ValueError('The vertice must be startPoint or endPoint of the edge')
         vert = self.vertices[vertNum%len(self.vertices)]
         if vert.isIdeal():
             return vert        
@@ -86,9 +89,8 @@ class Triangle(Polygon):
         offsetEdge = self.offsetEdge(edgeNum, offset, inner)
         perp = edge.makePerpendicular(*vert)
         if onEdge:
-            pts = [edge.intersectionsWithHcycle(h)[0] 
-                    for h in deltaLines_of_Line(perp, offset) 
-                    if isPointOnSegment(edge, *edge.intersectionsWithHcycle(h)[0])]
+            pts = [edge.intersectionsWithHcycle(h)[0] for h in deltaLines_of_Line(perp, offset) 
+            if isPointOnSegment(edge, *edge.intersectionsWithHcycle(h)[0])]
             assert len(pts)==1
         else:
             pts = offsetEdge.intersectionsWithHcycle(perp)
@@ -98,9 +100,13 @@ class Triangle(Polygon):
         hc1 = self.offsetEdge(edgeNum+1, offset)
         hc2 = self.offsetEdge(edgeNum-1, offset)
         pts = [p for p in hc1.intersectionsWithHcycle(hc2) if not p.isIdeal()]
-        assert len(pts)==1      #fails for bad geometry
+        # May throw if bad geometry
+        assert len(pts)==1
         return pts[0]
     def endCap(self, vertNum, edgeNum, offset):
+        vert = self.vertices[vertNum%len(self.vertices)]
+        if vert.isIdeal():
+            return vert
         sp = self.offsetVertice(vertNum, edgeNum, offset, inner=True)
         mp = self.offsetVertice(vertNum, edgeNum, offset, onEdge=True)
         ep = self.offsetVertice(vertNum, edgeNum, offset, inner=False)
@@ -108,7 +114,7 @@ class Triangle(Polygon):
             idealpts=[p for p in [sp,mp,ep] if p.isIdeal()]
             return idealpts[0]
         else:
-            return Arc.fromPoints(*sp, *ep, *mp, excludeMid=True)
+            return Hypercycle(Arc.fromPoints(*sp, *ep, *mp, excludeMid=True), segment=True)
     def midCap(self, vertNum, offset):
         vert = self.vertices[vertNum%len(self.vertices)]
         if vert.isIdeal():
@@ -121,13 +127,15 @@ class Triangle(Polygon):
             idealpts=[p for p in [sp,cp,ep] if p.isIdeal()]
             return idealpts[0]
         else:
-            return Arc.fromPointsWithCenter(*sp,*ep, *cp, r=circ.projShape.r, cw= not self.isCCW())
+            return Hypercycle(Arc.fromPointsWithCenter(*sp,*ep, *cp, r=circ.projShape.r, cw= not self.isCCW()), segment=True)
     @classmethod
     def fromVertices(cls, vertices):
         if len(vertices)!=3:
-            raise ValueError('Triangle vertices need to be three Points')
+            raise ValueError('The number of vertices needs to be 3')
         return cls(vertices=vertices)
     @classmethod
     def fromEdges(cls, edges, join=True):
+        if len(edges)!=3:
+            raise ValueError('The number of edges needs to be 3')
         return cls(edges=edges, join=join)
 
