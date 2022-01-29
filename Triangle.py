@@ -11,7 +11,7 @@ class Triangle(Polygon):
             assert len(vertices)==3
         super().__init__(edges=edges, join=join, vertices=vertices)
     def isCCW(self):
-        '''returns True for a counter-clock-wise self'''
+        '''returns True for a counter-clock-wise triangle'''
         if self.isIdeal():
             Deg0 = math.degrees(self.vertices[0].theta)
             Deg1 = math.degrees(self.vertices[1].theta)
@@ -32,7 +32,7 @@ class Triangle(Polygon):
         return (self.vertices[edgeNum%len(self.vertices)].isIdeal() and self.vertices[(edgeNum+1)%len(self.vertices)].isIdeal())
     def offsetEdge(self, edgeNum, offset, inner=True):
         '''returns the offset hypercycle of the edge closer to the inside of the self when inner is True'''
-        if ((self.isCCW() and offset<=0) or (not self.isCCW() and offset>=0)) ^ self.isEdgeIdeal(edgeNum):
+        if ((self.isCCW() and offset<=0) or (not self.isCCW() and offset>=0)) :#^ self.isEdgeIdeal(edgeNum):
             offset = -offset
         if inner:
             return Hypercycle.fromHypercycleOffset(self.edges[edgeNum%len(self.edges)], offset)
@@ -129,13 +129,14 @@ class Triangle(Polygon):
         else:
             return Hypercycle(Arc.fromPointsWithCenter(*sp,*ep, *cp, r=circ.projShape.r, cw= not self.isCCW()), segment=True)
     @classmethod
-    def fromVertices(cls, vertices):
-        if len(vertices)!=3:
-            raise ValueError('The number of vertices needs to be 3')
-        return cls(vertices=vertices)
-    @classmethod
     def fromEdges(cls, edges, join=True):
         if len(edges)!=3:
             raise ValueError('The number of edges needs to be 3')
         return cls(edges=edges, join=join)
+    @classmethod
+    def fromVertices(cls, vertices):
+        if len(vertices)!=3:
+            raise ValueError('The number of vertices needs to be 3')
+        tri=cls(vertices=vertices)    
+        return cls.fromEdges(tri.edges)
 
