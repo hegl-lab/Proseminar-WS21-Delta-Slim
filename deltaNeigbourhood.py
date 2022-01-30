@@ -13,13 +13,11 @@ class deltaNBH:
         assert isinstance(subShape, (Triangle))
         subShape = self.subShape
 
-def segmentIntersectionsWithHcycle(hcycle1, hcycle2):
-    if not isinstance(hcycle1, Hypercycle) or not isinstance(hcycle2, Hypercycle):
-        pts=[]
+def capIntersections(cap1, hcycle2):
+    if not isinstance(cap1, Hypercycle) or not isinstance(hcycle2, Hypercycle):
+        return []
     else:
-        pts=hcycle1.intersectionsWithHcycle(hcycle2)
-    valid = [p for p in pts if (isPointOnSegment(hcycle1, *p) and isPointOnSegment(hcycle2, *p))]
-    return valid
+        return cap1.segmentIntersectionsWithHcycle(hcycle2)
 
 def deltaNbh(triangle, delta, edgeNum=0):
     k=edgeNum
@@ -54,18 +52,18 @@ def deltaNbh(triangle, delta, edgeNum=0):
     #    eInLine = triangle.offsetEdge(k+1, delta, inner=True).trimmed(*temp7, *v6).reversed()
     #else:
     eInLine = triangle.offsetEdge(k+1, delta, inner=True).trimmed(*v6, *temp7)
-    if len(segmentIntersectionsWithHcycle(sCap, eCap))==1:
-        v1 = segmentIntersectionsWithHcycle(sCap, eCap)[0]
+    if len(capIntersections(sCap, eCap))==1:
+        v1 = capIntersections(sCap, eCap)[0]
         sCap = Hypercycle(Arc.fromPoints(*v1, *v2, *triangle.offsetVertice(k, k-1, delta, onEdge=True), excludeMid=True), segment=True)
         eCap = Hypercycle(Arc.fromPoints(*v5, *v1, *triangle.offsetVertice(k+1, k+1, delta, onEdge=True), excludeMid=True), segment=True)
         vertices , edges = [v1, v2, v3, v4, v5], [sCap, sOutLine, mCap, eOutLine, eCap]
-    elif len(segmentIntersectionsWithHcycle(sCap, eInLine))==1:
-        v1 = segmentIntersectionsWithHcycle(sCap, eInLine)[0]   
+    elif len(capIntersections(sCap, eInLine))==1:
+        v1 = capIntersections(sCap, eInLine)[0]
         eInLine = eInLine.trimmed(*v6, *v1)
         sCap = Hypercycle(Arc.fromPoints(*v1, *v2, *triangle.offsetVertice(k, k-1, delta, onEdge=True), excludeMid=True), segment=True)
         vertices, edges = [v1, v2, v3, v4, v5, v6], [sCap, sOutLine, mCap, eOutLine, eCap, eInLine]
-    elif len(segmentIntersectionsWithHcycle(eCap, sInLine))==1:
-        v6 = segmentIntersectionsWithHcycle(eCap, sInLine)[0]
+    elif len(capIntersections(eCap, sInLine))==1:
+        v6 = capIntersections(eCap, sInLine)[0]
         sInLine = sInLine.trimmed(*v6, *v1)
         eCap = Hypercycle(Arc.fromPoints(*v5, *v6, *triangle.offsetVertice(k+1, k+1, delta, onEdge=True), excludeMid=True), segment=True)
         vertices, edges = [v1, v2, v3, v4, v5, v6], [sCap, sOutLine, mCap, eOutLine, eCap, sInLine]
@@ -77,7 +75,7 @@ def deltaNbh(triangle, delta, edgeNum=0):
     vertices = [v for v,e in zip(vertices, edges) if isinstance(e, Hypercycle)]
     edges = [e for e in edges if isinstance(e,Hypercycle)]
     return Polygon(edges, join=False, vertices=vertices)
-    #TODO: get Polygon fixed for ideal points
+    #not fixed Lines for ideal points
 
 
 
