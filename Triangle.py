@@ -29,12 +29,9 @@ class Triangle(Polygon):
             p2 = Transform.applyToPoint(trans, self.vertices[(k-1)%len(self.vertices)])
             ccw=math.degrees(p2.theta)%360<=180
         return ccw
-    def isEdgeIdeal(self, edgeNum):
-        '''returns True when both vertices of the edge are ideal points'''
-        return (self.vertices[edgeNum%len(self.vertices)].isIdeal() and self.vertices[(edgeNum+1)%len(self.vertices)].isIdeal())
     def offsetEdge(self, edgeNum, offset, inner=True):
         '''returns the offset hypercycle of the edge closer (or further) to the inside of the triangle'''
-        if ((self.isCCW() and offset<=0) or (not self.isCCW() and offset>=0)) :#^ self.isEdgeIdeal(edgeNum):
+        if ((self.isCCW() and offset<=0) or (not self.isCCW() and offset>=0)) :
             offset = -offset
         if inner:
             return Hypercycle.fromHypercycleOffset(self.edges[edgeNum%len(self.edges)], offset)
@@ -44,9 +41,13 @@ class Triangle(Polygon):
         '''returns True when the delta-neigbourhood of any two sides of the triangle already cover the last one'''
         for i, edge in enumerate(self.edges):
             #tiny delta for ideal triangles will remove all points
-            ip1 = removeIdealPoints(edge.segmentIntersectionsWithHcycle(self.offsetEdge(i-1, delta)))
+            ip1 = [p 
+                    for p in edge.segmentIntersectionsWithHcycle(self.offsetEdge(i-1, delta))  
+                    if not p.isIdeal]
             #tiny delta for ideal triangles will remove all points
-            ip2 = removeIdealPoints(edge.segmentIntersectionsWithHcycle(self.offsetEdge(i+1, delta)))
+            ip2 = [p 
+                    for p in edge.segmentIntersectionsWithHcycle(self.offsetEdge(i+1, delta))
+                    if not p.isIdeal()]
             # Whole edge is covered by on of the sides deltaNbh or problem above
             if len(ip1) <= 0 or len(ip2) <= 0:
                 continue
@@ -131,7 +132,8 @@ class Triangle(Polygon):
             idealpts=[p for p in [sp,cp,ep] if p.isIdeal()]
             return idealpts[0]
         else:
-            return Hypercycle(Arc.fromPointsWithCenter(*sp,*ep, *cp, r=circ.projShape.r, cw= not self.isCCW()), segment=True)
+            arc = Arc.fromPointsWithCenter(*sp,*ep, *cp, r=circ.projShape.r, cw= not self.isCCW())
+            return Hypercycle(arc, segment=True).reversed()
     @classmethod
     def fromEdges(cls, edges, join=True):
         return cls(edges=edges, join=join)

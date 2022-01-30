@@ -23,19 +23,11 @@ def deltaNbh(triangle, delta, edgeNum=0):
     k=edgeNum
     sCap = triangle.endCap(k, k-1, delta)
     v2 = triangle.offsetVertice(k, k-1, delta, inner=False)
-    v3 = triangle.offsetVertice(k-1, k-1, delta, inner=False)
-    #if v2.isIdeal() and v3.isIdeal():
-    #    sOutLine = triangle.offsetEdge(k-1, delta, inner=False).trimmed(*v2, *v3)
-    #else:    
+    v3 = triangle.offsetVertice(k-1, k-1, delta, inner=False)  
     sOutLine = triangle.offsetEdge(k-1, delta, inner=False).trimmed(*v3, *v2).reversed()
     mCap = triangle.midCap(k-1, delta)
-    if isinstance(mCap, Hypercycle):
-        mCap=mCap.reversed()
     v4 = triangle.offsetVertice(k-1, k+1, delta, inner=False)
     v5 = triangle.offsetVertice(k+1, k+1, delta, inner=False)
-    #if v4.isIdeal() and v5.isIdeal():
-    #    eOutLine = triangle.offsetEdge(k+1, delta, inner=False).trimmed(*v4, *v5)
-    #else:
     eOutLine = triangle.offsetEdge(k+1, delta, inner=False).trimmed(*v5, *v4).reversed()
     eCap = triangle.endCap(k+1, k+1, delta)
     if isinstance(eCap, Hypercycle):
@@ -43,14 +35,8 @@ def deltaNbh(triangle, delta, edgeNum=0):
     v1 = triangle.offsetVertice(k, k-1, delta, inner=True)
     v6 = triangle.offsetVertice(k+1, k+1, delta, inner=True)
     temp7 = triangle.offsetVertice(k-1, k+1, delta, inner=True)
-    temp8 = triangle.offsetVertice(k-1, k-1, delta, inner= True)
-    #if temp8.isIdeal() and v1.isIdeal():
-    #    sInLine = triangle.offsetEdge(k-1, delta, inner=True).trimmed(*v1, *temp8).reversed()
-    #else:    
+    temp8 = triangle.offsetVertice(k-1, k-1, delta, inner= True) 
     sInLine = triangle.offsetEdge(k-1, delta, inner=True).trimmed(*temp8, *v1)
-    #if v6.isIdeal() and temp7.isIdeal():
-    #    eInLine = triangle.offsetEdge(k+1, delta, inner=True).trimmed(*temp7, *v6).reversed()
-    #else:
     eInLine = triangle.offsetEdge(k+1, delta, inner=True).trimmed(*v6, *temp7)
     if len(capIntersections(sCap, eCap))==1:
         v1 = capIntersections(sCap, eCap)[0]
@@ -75,7 +61,6 @@ def deltaNbh(triangle, delta, edgeNum=0):
     vertices = [v for v,e in zip(vertices, edges) if isinstance(e, Hypercycle)]
     edges = [e for e in edges if isinstance(e,Hypercycle)]
     return Polygon(edges, join=False, vertices=vertices)
-    #not fixed Lines for ideal points
 
 
 
