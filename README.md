@@ -16,7 +16,7 @@ See the iPython notebooks in [examples](https://github.com/hegl-lab/proseminar-w
 - [Half plane](https://github.com/hegl-lab/proseminar-wise21-deltaslim/blob/main/examples/halfplane.ipynb)
 - ...
 
-Choose your own points interactively in this [notebook](https://github.com/hegl-lab/proseminar-wise21-deltaslim/blob/main/examples/halfplane.ipynb).
+Choose your own points interactively in this [notebook](https://github.com/hegl-lab/proseminar-wise21-deltaslim/blob/main/examples/widget.ipynb).
 
 ![Trianle with deltaneigbourhood](https://github.com/hegl-lab/proseminar-wise21-deltaslim/blob/main/examples/images/trianglewithneigbourhood.png)
 
