@@ -3,6 +3,8 @@ from hyperbolic.poincare import Transform
 from hyperbolic.poincare.shapes import *
 from constructions import *
 
+class DoubleIntersections(Exception): pass
+
 class Triangle(Polygon):
     def __init__(self, edges=None, join=False, vertices=None):
         if not edges==None:
@@ -53,7 +55,7 @@ class Triangle(Polygon):
                 continue
             # May throw if bad geometry
             elif len(ip1) > 1 or len(ip2) > 1:
-                raise ValueError('Intersection with edge {} is ambiguous'.format(i))
+                raise DoubleIntersections()
             else:
                 p1, p2 = ip1[0], ip2[0]
                 s1 = self.vertices[i]
