@@ -9,8 +9,8 @@ from hyperbolic.poincare.shapes import *
 from hyperbolic.euclid.shapes import Arc
 
 class deltaNBH:
-    def __init__(self, subShape):
-        assert isinstance(subShape, (Triangle))
+    def __init__(self, subShape, delta):
+        assert isinstance(subShape, Triangle)
         subShape = self.subShape
 
 def capIntersections(cap1, hcycle2):
