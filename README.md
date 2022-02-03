@@ -27,7 +27,7 @@ $ pip3 install drawSvg
 Choose points interactively in this [widget](https://github.com/hegl-lab/proseminar-wise21-deltaslim/blob/main/examples/widget.ipynb) and explore deltaslim triabgles in the Poincaré disk model.\
 Images produced may look like this:
 
-![Trianle with deltaneigbourhood](https://github.com/hegl-lab/proseminar-wise21-deltaslim/blob/main/examples/images/trianglewithneigbourhood.png)
+![Triangle with deltaneigbourhood](https://github.com/hegl-lab/proseminar-wise21-deltaslim/blob/main/examples/images/poincare_triangle_nbh.png)
 
 See these iPython [notebooks](https://github.com/hegl-lab/proseminar-wise21-deltaslim/tree/main/examples) to view the examples:
 
