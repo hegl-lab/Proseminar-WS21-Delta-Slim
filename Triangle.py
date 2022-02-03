@@ -64,7 +64,7 @@ class Triangle(Polygon):
                 else:
                     return False
         return True
-    def approx(self):
+    def approx(self, precision=32):
         '''returns the smallest delta for which the triangle is delta-slim'''
         i=1
         k=0
@@ -72,7 +72,7 @@ class Triangle(Polygon):
         while self.isDeltaslim(delta)==False:
             delta=delta*2
             k=k+1
-        while i-k<45:
+        while i-k<precision:
             if self.isDeltaslim(delta)==True:
                 delta=delta-2**(k-i)
                 i=i+1
