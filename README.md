@@ -33,6 +33,8 @@ See these iPython [notebooks](https://github.com/hegl-lab/proseminar-wise21-delt
 
 - [Poincaré disk](https://github.com/hegl-lab/proseminar-wise21-deltaslim/blob/main/examples/poincare.ipynb)
 - [Half-plane](https://github.com/hegl-lab/proseminar-wise21-deltaslim/blob/main/examples/halfplane.ipynb)
-- ...
 
+This distribution is found:
+
+![histogram](https://github.com/hegl-lab/proseminar-wise21-deltaslim/blob/main/examples/images/histo_500_32_4.png)
 
