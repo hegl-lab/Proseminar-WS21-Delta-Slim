@@ -36,5 +36,5 @@ See these iPython [notebooks](https://github.com/hegl-lab/proseminar-wise21-delt
 
 This distribution is found:
 
-![histogram](https://github.com/hegl-lab/proseminar-wise21-deltaslim/blob/main/examples/images/histo_500_32_4.png)
+![histogram](https://github.com/hegl-lab/proseminar-wise21-deltaslim/blob/main/examples/images/histo_3000_64_4.png)
 
