@@ -8,9 +8,9 @@ from constructions import *
 from hyperbolic.poincare.shapes import *
 from hyperbolic.euclid.shapes import Arc
 
-class deltaNBH:
-    def __init__(self, subShape, delta):
-        assert isinstance(subShape, Triangle)
+class Neigbourhood:
+    def __init__(self, subShape, delta, edgeNum=None):
+        assert isinstance(subShape, (Polygon, Hypercycle, Point))
         subShape = self.subShape
 
 def capIntersections(cap1, hcycle2):

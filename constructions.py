@@ -1,10 +1,13 @@
 '''Constructionos for delta-slim triangles'''
 
-import math
 import numpy as np
-from hyperbolic import util
-from hyperbolic.euclid.shapes import  Arc, Line as ELine
-from hyperbolic.poincare.shapes import *
+from hyperbolic.poincare.shapes import Hypercycle, Point, Ideal
+
+def capIntersections(cap1, hcycle2):
+    if not isinstance(cap1, Hypercycle) or not isinstance(hcycle2, Hypercycle):
+        return []
+    else:
+        return cap1.segmentIntersectionsWithHcycle(hcycle2)
 
 def shift(seq, shift=1):
     perm=shift%len(seq)
