@@ -4,7 +4,7 @@ from hyperbolic.euclid import intersection
 from hyperbolic.euclid.shapes import Arc, Circle as ECircle
 from hyperbolic.poincare import Transform
 from hyperbolic.poincare.shapes import Hypercycle, Polygon, Circle, Point
-from sympy import Intersection
+
 
 
 def capIntersections(cap1, hcycle2):
