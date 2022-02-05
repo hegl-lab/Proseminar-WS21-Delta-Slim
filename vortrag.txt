@@ -1,18 +1,18 @@
 Deniz
-0.The aim of our project was to visualize delta slim triangles in the poincare disk model.
+0.The aim of our project was to visualize delta slim triangles in the poincare disk model and its delta hyperbolicity.
 As we know, the hyperbolic triangles look slimmer in comparison to euclidian triangles.
 If every edge of a triangle is covered by the delta neighborhoods of the two other edges, the triangle is called delta slim.
-A metric space is hyperbolic, if there is a delta so that every triangle is delta slim.
+A metric space is hyperbolic, if there is a delta so that every triangle is delta slim for it.
 
 Simon
 1. For the visulasation we extended the existing python package hyperbolic by Casey Duckering to produce the images you can see right behind me.
 Then we implemented a function that returns whether a given triangle is delta slim for a given delta.
-It uses the intersection points of lines of constant distance to the edges of the triangle. 
+It uses the intersection points of lines with constant distance to the edges, so called Hypercycles, and the edges of the triangle. 
 This enables us to approximate the minimal delta for which a given triangle is still delta slim using the mentioned function and nested intervals.
 
 Deniz
 2. Taking an experimental approach, we created a random sample of points uniformly distibuted in the euclidian unit circle.
-From this sample we created 3000 random triangles with different amount of ideal points as vertices and plotted the results. 
+From this sample we created 3000 random triangles with different amount of ideal points as vertices and plotted their minimal deltas. 
 For more ideal points, more triangles have a greater minimal delta. 
 Also we find a maximum of the minimal deltas, which is the same value that all of the ideal triangles yield.
 
