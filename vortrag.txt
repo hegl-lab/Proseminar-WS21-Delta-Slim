@@ -1,21 +1,26 @@
-0. As we know, the hyperbolic triangles look slimmer in comparison to euclidian triangles.
-If every side of a triangle is covered by the delta neighborhoods of the two other sides, the triangle is said to be delta slim.
+Deniz
+0.The aim of our project was to visualize delta slim triangles in the poincare disk model.
+As we know, the hyperbolic triangles look slimmer in comparison to euclidian triangles.
+If every edge of a triangle is covered by the delta neighborhoods of the two other edges, the triangle is called delta slim.
 A metric space is hyperbolic, if there is a delta so that every triangle is delta slim.
-The aim of our project was to visualize delta slim triangles in the poincare disk model.
 
-2. So we created 3000 random triangles with 3, 2, 1 and 0 ideal points, and compared the results. 
-The more ideal points we have, the bigger the minimal deltas are. 
-For ideal triangles, we only had the global delta as our result. 
-This consistent with the mathematical knowledge we have, 
+Simon
+1. For the visulasation we extended the existing python package hyperbolic by Casey Duckering to produce the images you can see right behind me.
+Then we implemented a function that returns whether a given triangle is delta slim for a given delta.
+It uses the intersection points of lines of constant distance to the edges of the triangle. 
+This enables us to approximate the minimal delta for which a given triangle is still delta slim using the mentioned function and nested intervals.
+
+Deniz
+2. Taking an experimental approach, we created a random sample of points uniformly distibuted in the euclidian unit circle.
+From this sample we created 3000 random triangles with different amount of ideal points as vertices and plotted the results. 
+For more ideal points, more triangles have a greater minimal delta. 
+Also we find a maximum of the minimal deltas, which is the same value that all of the ideal triangles yield.
+
+Simon
+3. This is consistent with the mathematical knowledge we have, 
 because every non ideal triangle is covered by an ideal triangle, 
 and all ideal triangles are congruent.
-
-1. Therefore we extended the existing python package hyperbolic by Casey Duckering to produce the mentioned images.
-We implemented a function that returns whether a given triangle is delta slim for a given delta.
-It uses the intersection points of lines of constant distance to the edges of the triangle. 
-Afterwards we approximated the minimal delta for a given triangle using the mentioned function and nested intervals.
-
-3. As we know the poincare half plane and disk models are isomorphic, 
+As we know the poincare half plane and disk models are isomorphic, 
 so we applied what we have found to the upper half plane model as well.
 
 
