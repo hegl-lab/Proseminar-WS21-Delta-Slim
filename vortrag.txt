@@ -1,0 +1,22 @@
+0. As we know, the hyperbolic triangles look slimmer in comparison to euclidian triangles.
+If every side of a triangle is covered by the delta neighborhoods of the two other sides, the triangle is said to be delta slim.
+A metric space is hyperbolic, if there is a delta so that every triangle is delta slim.
+The aim of our project was to visualize delta slim triangles in the poincare disk model.
+
+2. So we created 3000 random triangles with 3, 2, 1 and 0 ideal points, and compared the results. 
+The more ideal points we have, the bigger the minimal deltas are. 
+For ideal triangles, we only had the global delta as our result. 
+This consistent with the mathematical knowledge we have, 
+because every non ideal triangle is covered by an ideal triangle, 
+and all ideal triangles are congruent.
+
+1. Therefore we extended the existing python package hyperbolic by Casey Duckering to produce the mentioned images.
+We implemented a function that returns whether a given triangle is delta slim for a given delta.
+It uses the intersection points of lines of constant distance to the edges of the triangle. 
+Afterwards we approximated the minimal delta for a given triangle using the mentioned function and nested intervals.
+
+3. As we know the poincare half plane and disk models are isomorphic, 
+so we applied what we have found to the upper half plane model as well.
+
+
+https://commons.wikimedia.org/wiki/File:Delta_thin_triangle_condition.svg#mw-jump-to-license
