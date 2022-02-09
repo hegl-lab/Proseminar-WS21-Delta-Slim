@@ -29,16 +29,6 @@ def randomPoints(total, numIdeal=0):
     np.random.shuffle(pts)
     return pts
 
-def randomPoints2(total, numIdeal=0):
-    if total<numIdeal:
-        raise ValueError('The total number of points must be greater than number of ideal points')
-    rvals = [util.radialEuclidToPoincare(r) for r in np.random.rand(total-numIdeal)**0.5]
-    tvals = 2*np.pi*np.random.rand(total)
-    pts = [Point.fromHPolar(rvals[k],t) if k<total-numIdeal else Ideal(t) for k, t in enumerate(tvals)]
-    np.random.shuffle(pts)
-    return pts
-
-
 def sample(n=1000, precision=16, numIdeal=0):    
     i=0
     DList = []

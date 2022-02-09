@@ -1,17 +1,11 @@
 
 import math
+from constructions import capIntersections
 from hyperbolic.euclid import intersection
 from hyperbolic.euclid.shapes import Arc, Circle as ECircle
 from hyperbolic.poincare import Transform
 from hyperbolic.poincare.shapes import Hypercycle, Polygon, Circle, Point
 
-
-
-def capIntersections(cap1, hcycle2):
-    if not isinstance(cap1, Hypercycle) or not isinstance(hcycle2, Hypercycle):
-        return []
-    else:
-        return cap1.segmentIntersectionsWithHcycle(hcycle2)
 
 class DoubleIntersections(Exception): pass
 
