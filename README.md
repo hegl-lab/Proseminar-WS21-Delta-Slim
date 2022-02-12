@@ -18,6 +18,21 @@ This implies the existence of a global delta in hyperbolic spaces.
 Our project had the aim to visualize the delta neighborhoods for different triangles in the Poincaré disk model,
 to compute the minimal delta for different triangles, 
 and to show how these minimal deltas interplay with the global solution.
+In particular we implemented a function that returns whether a given triangle is delta slim for a given delta.
+It uses lines of constant distance to the edges -so called Hypercycles- and their intersection points with the other edges of the triangle. 
+This enables us to approximate the minimal delta for which a given triangle is still delta slim using the mentioned function and nested intervals.
+Taking an experimental approach, we created a random sample of points uniformly distibuted in the euclidian unit circle.
+From this sample we created 3000 random triangles with different amount of ideal points as vertices and plotted their minimal deltas. 
+For more ideal points, more triangles have a greater minimal delta. 
+Also we find a maximum of the minimal deltas, the global delta, which is the same value that all of the ideal triangles yield.
+This result confirmes our expectations. 
+It is quite easy to show that every non ideal triangle is surrounded by an ideal triangle, 
+and therefore if the ideal triangle is delta-slim the non ideal is as well. 
+(We wrote a fuction which gives one of these surrounding ideal triangles for a given triangle.)
+It is well established by the earlier mathematical work that all ideal triangles are congruent. 
+So in conclusion, the minimal delta of any ideal triangle already is the global delta.
+As we know the upper half plane and poincare disk models are isomorphic, 
+so we extended our code to the upper half plane model as well.
 
 ## Setup
 
