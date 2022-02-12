@@ -1,0 +1,3 @@
+Work done by Deniz Aydin:
+The method "approx" in Triangle.py and its implementation in widget.ipynb and test_code_drawing.ipynb
+The first two cells of histo.ipynb, the second cell reappears in constructions.py as "sample"
