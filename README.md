@@ -24,6 +24,9 @@ It uses lines of constant distance to the edges -so called Hypercycles- and thei
 ![Triangle with inner Hypercycles](https://github.com/hegl-lab/proseminar-wise21-deltaslim/blob/main/examples/images/poincare_triangle_2_inneroffsetEdge.png)
 
 This enables us to approximate the minimal delta for which a given triangle is still delta slim using the mentioned function and nested intervals.
+
+![triangle approximated neigbourhood](https://github.com/hegl-lab/proseminar-wise21-deltaslim/blob/main/examples/images/poincare_triangle_2_nbh_approx.png)
+
 Taking an experimental approach, we created a random sample of points uniformly distibuted in the euclidian unit circle.
 
 ![uniform sample](https://github.com/hegl-lab/proseminar-wise21-deltaslim/blob/main/examples/images/poincare_sample_points.png)
@@ -41,7 +44,7 @@ and therefore if the ideal triangle is delta-slim the non ideal is as well.
 ![Triangle with surrounding Triangle](https://github.com/hegl-lab/proseminar-wise21-deltaslim/blob/main/examples/images/poincare_triangle_2_surroundingIdealTriangle.png)
 
 It is well established by the earlier mathematical work that all ideal triangles are congruent. 
-So in conclusion, the minimal delta of any ideal triangle already is the global delta.
+So in conclusion, the minimal delta of any ideal triangle already is the global delta.\
 As we know the upper half plane and poincare disk models are isomorphic, 
 so we extended our code to the upper half plane model as well.
 
@@ -65,5 +68,5 @@ Choose points interactively in this [widget](https://github.com/hegl-lab/prosemi
 
 See these [examples](https://github.com/hegl-lab/proseminar-wise21-deltaslim/tree/main/examples) for a better understanding:
 
-- [Poincaré disk](https://github.com/hegl-lab/proseminar-wise21-deltaslim/blob/main/examples/poincare.ipynb)
+- [Poincaré disk](https://github.com/hegl-lab/proseminar-wise21-deltaslim/blob/main/examples/poincaredisk.ipynb)
 - [Half-plane](https://github.com/hegl-lab/proseminar-wise21-deltaslim/blob/main/examples/halfplane.ipynb)
