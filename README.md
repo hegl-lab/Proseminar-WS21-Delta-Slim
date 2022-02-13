@@ -36,8 +36,9 @@ From this sample we created random triangles with different amount of ideal poin
 ![Histogram step](https://github.com/hegl-lab/proseminar-wise21-deltaslim/blob/main/examples/images/histo_3000_64_3_step_30.png)
 
 For more ideal points, more triangles have a greater minimal delta. 
-Also we find a maximum of the minimal deltas, the global delta, which is the same value that all of the ideal triangles yield.
-This result confirmes our expectations. 
+We find a maximum of the minimal deltas, a global delta, which is the same value that all of the ideal triangles yield. (0.881373587064445)
+Also, the analytical solution for this problem is log(1+sqrt(2)) (which is approximately equal to 0.8813735870195429)
+This result confirms our expectations. 
 It is quite easy to show that every non ideal triangle is surrounded by an ideal triangle, 
 and therefore if the ideal triangle is delta-slim the non ideal is as well. 
 
