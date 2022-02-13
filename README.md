@@ -25,7 +25,7 @@ It uses lines of constant distance to the edges -so called Hypercycles- and thei
 
 This enables us to approximate the minimal delta for which a given triangle is still delta slim using the mentioned function and nested intervals.
 
-![triangle approximated neigbourhood](https://github.com/hegl-lab/proseminar-wise21-deltaslim/blob/main/examples/images/poincare_triangle_2_nbh_approx.png)
+![triangle approximated neigbourhood](https://github.com/hegl-lab/proseminar-wise21-deltaslim/blob/main/examples/images/poincare_triangle_2_nbh_approx_smallest.png)
 
 Taking an experimental approach, we created a random sample of points uniformly distibuted in the euclidian unit circle.
 
