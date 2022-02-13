@@ -1,11 +1,15 @@
 
 import math
-from constructions import capIntersections
 from hyperbolic.euclid import intersection
 from hyperbolic.euclid.shapes import Arc, Circle as ECircle
 from hyperbolic.poincare import Transform
 from hyperbolic.poincare.shapes import Hypercycle, Polygon, Circle, Point
 
+def capIntersections(cap1, hcycle2):
+    if not isinstance(cap1, Hypercycle) or not isinstance(hcycle2, Hypercycle):
+        return []
+    else:
+        return cap1.segmentIntersectionsWithHcycle(hcycle2)
 
 class DoubleIntersections(Exception): pass
 
@@ -33,18 +37,18 @@ class Triangle(Polygon):
             k=vertNumOfPoints[0]
             trans = Transform.shiftOrigin(self.vertices[k], self.vertices[(k+1)%len(self.vertices)])
             p2 = Transform.applyToPoint(trans, self.vertices[(k-1)%len(self.vertices)])
-            ccw=math.degrees(p2.theta)%360<=180
+            ccw = math.degrees(p2.theta)%360<=180
         return ccw
     def offsetEdge(self, edgeNum, offset, inner=True):
         '''returns the offset hypercycle of the edge closer (or further) to the inside of the triangle'''
-        if ((self.isCCW() and offset<=0) or (not self.isCCW() and offset>=0)) :
+        if ((self.isCCW() and offset<=0) or (not self.isCCW() and offset>=0)):
             offset = -offset
         if inner:
             return Hypercycle.fromHypercycleOffset(self.edges[edgeNum%len(self.edges)], offset)
         else:
             return Hypercycle.fromHypercycleOffset(self.edges[edgeNum%len(self.edges)], -offset)
     def isDeltaslim(self, delta):
-        '''returns True when the delta-neigbourhood of any two sides of the triangle already cover the last one'''
+        '''returns True when the delta-neigbourhood of any two edges already covers the last one'''
         for i, edge in enumerate(self.edges):
             #tiny delta for ideal triangles will remove all points
             ip1 = [p 
@@ -57,7 +61,7 @@ class Triangle(Polygon):
             # Whole edge is covered by on of the sides deltaNbh or problem above
             if len(ip1) <= 0 or len(ip2) <= 0:
                 continue
-            # May throw if bad geometry
+            # May throw if bad geometry and rounding errors
             elif len(ip1) > 1 or len(ip2) > 1:
                 raise DoubleIntersections()
             else:
@@ -140,7 +144,8 @@ class Triangle(Polygon):
         offsetEdge = self.offsetEdge(edgeNum, offset, inner=inner)
         perp = edge.makePerpendicular(*vert)
         if onEdge:
-            if (vertNum%len(self.vertices)==edgeNum%len(self.edges) and offset>=0) or (vertNum%len(self.vertices)!=edgeNum%len(self.edges) and offset<=0):
+            if ((vertNum%len(self.vertices)==edgeNum%len(self.edges) and offset>=0) or 
+                (vertNum%len(self.vertices)!=edgeNum%len(self.edges) and offset<=0)):
                 pts = edge.intersectionsWithHcycle(perp.makeOffset(-offset))
             else:
                 pts = edge.intersectionsWithHcycle(perp.makeOffset(offset))
@@ -203,26 +208,30 @@ class Triangle(Polygon):
         eInLine = self.offsetEdge(k+1, delta, inner=True).trimmed(*v6, *temp7)
         if len(capIntersections(sCap, eCap))==1:
             v1 = capIntersections(sCap, eCap)[0]
-            sCap = Hypercycle(Arc.fromPoints(*v1, *v2, *self.offsetVertice(k, k-1, delta, onEdge=True), excludeMid=True), segment=True)
-            eCap = Hypercycle(Arc.fromPoints(*v5, *v1, *self.offsetVertice(k+1, k+1, delta, onEdge=True), excludeMid=True), segment=True)
-            vertices , edges = [v1, v2, v3, v4, v5], [sCap, sOutLine, mCap, eOutLine, eCap]
+            sCap = sCap.trimmed(*v1, *v2)
+            eCap = eCap.trimmed(*v5, *v1)
+            vertices = [v1, v2, v3, v4, v5]
+            edges = [sCap, sOutLine, mCap, eOutLine, eCap]
         elif len(capIntersections(sCap, eInLine))==1:
             v1 = capIntersections(sCap, eInLine)[0]
             eInLine = eInLine.trimmed(*v6, *v1)
-            sCap = Hypercycle(Arc.fromPoints(*v1, *v2, *self.offsetVertice(k, k-1, delta, onEdge=True), excludeMid=True), segment=True)
-            vertices, edges = [v1, v2, v3, v4, v5, v6], [sCap, sOutLine, mCap, eOutLine, eCap, eInLine]
+            sCap = sCap.trimmed(*v1, *v2)
+            vertices = [v1, v2, v3, v4, v5, v6]
+            edges = [sCap, sOutLine, mCap, eOutLine, eCap, eInLine]
         elif len(capIntersections(eCap, sInLine))==1:
             v6 = capIntersections(eCap, sInLine)[0]
             sInLine = sInLine.trimmed(*v6, *v1)
-            eCap = Hypercycle(Arc.fromPoints(*v5, *v6, *self.offsetVertice(k+1, k+1, delta, onEdge=True), excludeMid=True), segment=True)
-            vertices, edges = [v1, v2, v3, v4, v5, v6], [sCap, sOutLine, mCap, eOutLine, eCap, sInLine]
+            eCap = eCap.trimmed(*v5,*v6)
+            vertices = [v1, v2, v3, v4, v5, v6]
+            edges = [sCap, sOutLine, mCap, eOutLine, eCap, sInLine]
         else:
             v7 = self.offsetEdgeIntersectionPoint(k, delta)
             sInLine = sInLine.trimmed(*v7, *v1)
             eInLine = eInLine.trimmed(*v6, *v7)
-            vertices, edges = [v1, v2, v3, v4, v5, v6, v7], [sCap, sOutLine, mCap, eOutLine, eCap, eInLine, sInLine]
+            vertices = [v1, v2, v3, v4, v5, v6, v7]
+            edges = [sCap, sOutLine, mCap, eOutLine, eCap, eInLine, sInLine]
         vertices = [v for v,e in zip(vertices, edges) if isinstance(e, Hypercycle)]
-        edges = [e for e in edges if isinstance(e,Hypercycle)]
+        edges = [e for e in edges if isinstance(e, Hypercycle)]
         return Polygon(edges, join=False, vertices=vertices)
     @classmethod
     def fromEdges(cls, edges, join=True):

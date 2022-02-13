@@ -1,3 +1,11 @@
 Work done by Deniz Aydin:
 The method "approx" in Triangle.py and its implementation in widget.ipynb and test_code_drawing.ipynb
 The first two cells of histo.ipynb, the second cell reappears in constructions.py as "sample"
+blogpost
+talk at HEGL community seminar
+
+Work by Simon:
+subclass Triangle in triangle.py exept approx(self, precision=32)
+constructions exept sample(n=1000, precision=16, numIdeal=0)
+examples
+test_code_drawing
