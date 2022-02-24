@@ -1,9 +1,21 @@
 
 import math
 from hyperbolic.euclid import intersection
-from hyperbolic.euclid.shapes import Arc, Circle as ECircle
+from hyperbolic.euclid.shapes import Arc, Circle as ECircle, Line as ELine
 from hyperbolic.poincare import Transform
 from hyperbolic.poincare.shapes import Hypercycle, Polygon, Circle, Point
+
+def tangentLine(circ, x, y):
+    '''returns tangent at deg of the circle or '''
+    if isinstance(circ, ELine):
+        line = circ.makeParallel(x, y)
+        return line.makeParallel(x, y)
+    else:
+        cline = ELine.fromPoints(circ.cx, circ.cy, x, y)
+        tan = cline.makePerpendicular(x, y)
+        if circ.cw:
+            tan = tan.makeParallel(x, y) 
+        return tan 
 
 def capIntersections(cap1, hcycle2):
     if not isinstance(cap1, Hypercycle) or not isinstance(hcycle2, Hypercycle):
@@ -15,10 +27,10 @@ class DoubleIntersections(Exception): pass
 
 class Triangle(Polygon):
     def __init__(self, edges=None, join=False, vertices=None):
-        if not edges==None:
+        if edges is not None:
             if len(edges)!=3:
                 raise ValueError('The number of edges needs to be 3')
-        if not vertices==None:
+        if vertices is not None:
             if len(vertices)!=3:
                 raise ValueError('The number of vertices needs to be 3')
         super().__init__(edges=edges, join=join, vertices=vertices)
@@ -47,6 +59,49 @@ class Triangle(Polygon):
             return Hypercycle.fromHypercycleOffset(self.edges[edgeNum%len(self.edges)], offset)
         else:
             return Hypercycle.fromHypercycleOffset(self.edges[edgeNum%len(self.edges)], -offset)
+    def offsetVertice(self, vertNum, edgeNum, offset, inner=False, onEdge=False):
+        '''returns offset vertice on (outer) offseEdge
+        or returns offset vertice on Edge '''
+        if edgeNum%len(self.edges)==(vertNum+1)%len(self.vertices):
+            raise ValueError('The vertice must be startPoint or endPoint of the edge')
+        vert = self.vertices[vertNum%len(self.vertices)]
+        if vert.isIdeal():
+            return vert        
+        edge = self.edges[edgeNum%len(self.edges)]
+        offsetEdge = self.offsetEdge(edgeNum, offset, inner=inner)
+        perp = edge.makePerpendicular(*vert)
+        if onEdge:
+            if ((vertNum%len(self.vertices)==edgeNum%len(self.edges) and offset>=0) or 
+                (vertNum%len(self.vertices)!=edgeNum%len(self.edges) and offset<=0)):
+                pts = edge.intersectionsWithHcycle(perp.makeOffset(-offset))
+            else:
+                pts = edge.intersectionsWithHcycle(perp.makeOffset(offset))
+            assert len(pts)==1
+        else:
+            pts = offsetEdge.intersectionsWithHcycle(perp)
+            assert len(pts)==1
+        return pts[0]
+    def innerAngle(self, vertNum):
+        if self.vertices[vertNum].isIdeal():
+            return 0
+        else:
+            vx, vy = self.vertices[vertNum]
+            edge1 = self.edges[vertNum%len(self.vertices)].projShape
+            edge2 = self.edges[(vertNum+1)%len(self.vertices)].projShape
+            #the tangent lines both have right orientation for inner degree
+            tan1 = tangentLine(edge1, *self.vertices[vertNum]).makeParallel(vx, vy)
+            tan2 = tangentLine(edge2, *self.vertices[vertNum])
+            t1x1, t1y1 = tan1.startPoint()
+            t1x2, t1y2 = tan1.endPoint()
+            t2x1, t2y1 = tan2.startPoint()
+            t2x2, t2y2 = tan2.endPoint()
+            vxt1, vyt1 = t1x2 - t1x1, t1y2 - t1y1
+            vxt2, vyt2 = t2x2 - t2x1, t2y2 - t2y1
+            rad = math.acos((vxt1*vxt2+vyt1*vyt2)/(math.hypot(vxt1,vyt1)*math.hypot(vxt2,vyt2)))
+            return rad
+    def area(self):
+        area = math.pi - (self.innerAngle(0) + self.innerAngle(1) + self.innerAngle(2))
+        return abs(area)
     def isDeltaslim(self, delta):
         '''returns True when the delta-neigbourhood of any two edges already covers the last one'''
         for i, edge in enumerate(self.edges):
@@ -58,7 +113,7 @@ class Triangle(Polygon):
             ip2 = [p 
                     for p in edge.segmentIntersectionsWithHcycle(self.offsetEdge(i+1, delta))
                     if not p.isIdeal()]
-            # Whole edge is covered by on of the sides deltaNbh or problem above
+            # Whole edge is covered by one of the sides deltaNbh or problem above
             if len(ip1) <= 0 or len(ip2) <= 0:
                 continue
             # May throw if bad geometry and rounding errors
@@ -132,28 +187,6 @@ class Triangle(Polygon):
             p1 = self.vertices[1] if self.vertices[1].isIdeal() else Point.fromEuclid(*arc1.midpoint())
             p2 = self.vertices[2] if self.vertices[2].isIdeal() else Point.fromEuclid(*arc2.midpoint())
             return Triangle.fromVertices([p0, p1, p2])
-    def offsetVertice(self, vertNum, edgeNum, offset, inner=False, onEdge=False):
-        '''returns offset vertice on (outer) offseEdge
-        or returns offset vertice on Edge '''
-        if edgeNum%len(self.edges)==(vertNum+1)%len(self.vertices):
-            raise ValueError('The vertice must be startPoint or endPoint of the edge')
-        vert = self.vertices[vertNum%len(self.vertices)]
-        if vert.isIdeal():
-            return vert        
-        edge = self.edges[edgeNum%len(self.edges)]
-        offsetEdge = self.offsetEdge(edgeNum, offset, inner=inner)
-        perp = edge.makePerpendicular(*vert)
-        if onEdge:
-            if ((vertNum%len(self.vertices)==edgeNum%len(self.edges) and offset>=0) or 
-                (vertNum%len(self.vertices)!=edgeNum%len(self.edges) and offset<=0)):
-                pts = edge.intersectionsWithHcycle(perp.makeOffset(-offset))
-            else:
-                pts = edge.intersectionsWithHcycle(perp.makeOffset(offset))
-            assert len(pts)==1
-        else:
-            pts = offsetEdge.intersectionsWithHcycle(perp)
-            assert len(pts)==1
-        return pts[0]
     def offsetEdgeIntersectionPoint(self, edgeNum, offset):
         hc1 = self.offsetEdge(edgeNum+1, offset)
         hc2 = self.offsetEdge(edgeNum-1, offset)
@@ -232,7 +265,7 @@ class Triangle(Polygon):
             edges = [sCap, sOutLine, mCap, eOutLine, eCap, eInLine, sInLine]
         vertices = [v for v,e in zip(vertices, edges) if isinstance(e, Hypercycle)]
         edges = [e for e in edges if isinstance(e, Hypercycle)]
-        return Polygon(edges, join=False, vertices=vertices)
+        return Polygon(edges, join=False, vertices=vertices) #isn't a true polygon in the most cases
     @classmethod
     def fromEdges(cls, edges, join=True):
         return cls(edges=edges, join=join)

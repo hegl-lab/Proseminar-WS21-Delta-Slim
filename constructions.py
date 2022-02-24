@@ -1,8 +1,12 @@
 '''Constructionos for delta-slim triangles'''
 
+import math
+import pandas as pd
 import numpy as np
+from hyperbolic.euclid.intersection import InfiniteIntersections, SingleIntersection
+from hyperbolic.euclid.shapes import Circle as ECircle, Line as ELine
 from hyperbolic.poincare.shapes import Hypercycle, Point, Ideal
-from Triangle import Triangle
+from Triangle import DoubleIntersections, Triangle
 
 def deltaLines_of_Line(Line, offset):
     hc1=Hypercycle.fromHypercycleOffset(Line,offset)
@@ -36,4 +40,38 @@ def sample(n=1000, precision=16, numIdeal=0):
 def Data(n, precision, i=0):
     return [sample(n, precision, k) for k in range(i+1)]
 
+def areaDeltaData(n, numIdeal=None):
+    i=0
+    kList=[]
+    dList=[]
+    aList=[]
+    while i<n:
+        if numIdeal is None:
+            k = np.random.randint(4)
+        else:
+            k = numIdeal
+        PList=randomPoints(3, k)
+        try:
+            Tri=Triangle.fromVertices(PList)
+        except ValueError:
+            continue
+        except InfiniteIntersections:
+            continue
+        except SingleIntersection:
+            continue
+        try:
+            delta=Tri.approx()
+        except DoubleIntersections:
+            continue
+        area=Tri.area()
+        kList.append(k)
+        dList.append(delta)
+        aList.append(area)
+        df = pd.DataFrame({
+            "numIdeal": kList,
+            "delta": dList,
+            "area": aList 
+        })
+        i+=1
+    return df
 
